@@ -1,0 +1,10 @@
+import http from 'node:http';
+import worker from '../worker/index.js';
+import {MemoryBucket} from '../tests/storage.mjs';
+import {createKnowledgeConnection} from '../bridge/knowledge.mjs';
+const env={BUCKET:new MemoryBucket()};
+const previewOrigin='http://127.0.0.1:8795';
+const api=async(p,b)=>{const r=await fetch(previewOrigin+p,{method:b?'POST':'GET',headers:{'X-Project-Hub':'1','Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error('Preview API returned '+r.status);return r.json();};
+const knowledge=createKnowledgeConnection({api,storagePath:'\\\\192.0.2.10\\AgentDocuments',pythonPath:'C:/Users/ExampleUser/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe',download:async p=>{const r=await fetch(previewOrigin+p);if(!r.ok)throw new Error('Original unavailable');return r.arrayBuffer();},uploadFile:async(id,bytes)=>{const r=await fetch(previewOrigin+'/api/knowledge/bridge-file?id='+id,{method:'POST',headers:{'X-Project-Hub':'1'},body:bytes});if(!r.ok)throw new Error('Transfer failed');}});
+if(process.argv.includes('--knowledge'))setInterval(async()=>{await env.BUCKET.put('control/connection.json',JSON.stringify({bridgeId:'preview',state:'connected',seenAt:new Date().toISOString()}));void knowledge.tick();},1000);
+http.createServer(async(req,res)=>{const chunks=[];for await(const c of req)chunks.push(c);const r=new Request('http://127.0.0.1:8795'+req.url,{method:req.method,headers:req.headers,...(req.method==='GET'||req.method==='HEAD'?{}:{body:Buffer.concat(chunks)})});const out=await worker.fetch(r,env);res.writeHead(out.status,Object.fromEntries(out.headers));res.end(Buffer.from(await out.arrayBuffer()));}).listen(8795,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:8795'));

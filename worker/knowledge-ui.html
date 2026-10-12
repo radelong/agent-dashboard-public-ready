@@ -1,0 +1,19 @@
+<section class="view" id="view-knowledge">
+ <div class="eyebrow">Reference library / document submission</div><h1>Give your agents the source.</h1>
+ <p class="sub">Submit documents once. Search their contents and let project agents retrieve cited passages.</p>
+ <div class="knowledge-layout">
+  <form id="knowledgeUpload" class="panel">
+   <h2>Submit documents</h2><p class="notice">Originals go to your private Unraid share. Searchable text and vectors stay in this private dashboard. Uploads wait here while the local connection is offline.</p>
+   <label for="knowledgeProject">Available to</label><select id="knowledgeProject" name="projectId"></select>
+   <label for="knowledgeTitle">Title (optional, for one file)</label><input id="knowledgeTitle" maxlength="300" placeholder="Use the filename by default">
+   <label class="drop-zone" id="knowledgeDrop" for="knowledgeFiles"><strong>Select files or drop them here</strong><span>PDF · DOCX · PPTX · XLSX · text · Markdown · CSV</span><span>25 MB per file. Scanned PDFs need selectable text or OCR.</span></label>
+   <input id="knowledgeFiles" type="file" multiple accept=".pdf,.docx,.pptx,.xlsx,.txt,.md,.csv,.tsv,.json,.html,.htm,.log" required>
+   <p class="notice" id="knowledgeSelected">No files selected.</p><button class="btn primary" type="submit" id="knowledgeSend">Submit &amp; index ↗</button><p id="knowledgeProgress" class="notice" role="status" aria-live="polite"></p>
+  </form>
+  <div>
+   <div class="panel"><h2>Search your sources</h2><form id="knowledgeSearch" class="knowledge-search"><label class="sr-only" for="knowledgeQuery">Search query</label><input id="knowledgeQuery" type="search" required maxlength="2000" placeholder="Ask about anything in your documents…"><label class="sr-only" for="knowledgeScope">Search scope</label><select id="knowledgeScope"></select><button class="btn primary" type="submit">Search</button></form><p id="knowledgeSearchStatus" role="status" aria-live="polite" class="notice">Results include the document, page or section, and exact passage.</p><div id="knowledgeResults"></div></div>
+   <div class="panel knowledge-register"><div class="toolbar"><h2>Document library</h2><button class="btn" id="knowledgeRefresh" type="button">Refresh</button></div><p class="notice" id="knowledgeCapacity"></p><div id="knowledgeList"></div></div>
+  </div>
+ </div>
+ <p class="notice">Use the ExampleUser Projects plugin in ChatGPT or Codex to search this library. Dashboard agents receive matching references for their project automatically. Shared documents are available across projects.</p>
+</section>

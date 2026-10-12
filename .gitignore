@@ -1,0 +1,11 @@
+dist/
+work/
+.sites-runtime/
+.env*
+!.env.example
+node_modules/
+.openai/hosting.json
+.dev.vars*
+*.key
+*.pem
+__pycache__/

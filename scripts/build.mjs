@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root = process.cwd();
+const hostingPath = fs.existsSync('.openai/hosting.json') ? '.openai/hosting.json' : '.openai/hosting.example.json';
+const manifest = JSON.parse(fs.readFileSync(hostingPath, 'utf8'));
+if (!manifest.project_id || manifest.r2 !== 'BUCKET') throw new Error('Missing Site identity or storage binding');
+let source = fs.readFileSync('worker/index.js', 'utf8');
+source = source.replace("import { SEED } from './seed.mjs';", fs.readFileSync('worker/seed.mjs','utf8').replace('export const SEED', 'const SEED'));
+source = source.replace("import { HTML } from './ui.mjs';", fs.readFileSync('worker/ui.mjs','utf8').replace('export const HTML', 'const HTML'));
+source=source.replace("import { controlRoute, controlState } from './control.mjs';",fs.readFileSync('worker/control.mjs','utf8').replace(/^import .*?;\r?\n/,'').replace(/export \{controlRoute,controlState\};/,''));
+source=source.replace("import {knowledgeRoute,knowledgeTools,knowledgeTool} from './knowledge.mjs';",fs.readFileSync('worker/knowledge.mjs','utf8').replace(/^import .*?;\r?\n/,'').replace(/export \{knowledgeRoute,knowledgeState,knowledgeTools,knowledgeTool,searchKnowledge,getPassage,compactSearch,MODEL\};/,''));
+source=source.replace(/export \{read,put,all,reply,fail,id,str,body,state\};/,'');
+fs.mkdirSync(path.join(root,'dist/server'), {recursive:true});
+fs.mkdirSync(path.join(root,'dist/.openai'), {recursive:true});
+fs.writeFileSync('dist/server/index.js',source);
+fs.writeFileSync('dist/.openai/hosting.json',JSON.stringify(manifest,null,2));
+console.log('Built project dashboard with persistent storage.');

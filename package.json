@@ -1,0 +1,1 @@
+{"name":"ExampleUser-project-hub","private":true,"type":"module","scripts":{"build":"node scripts/update-ui.mjs && node scripts/build.mjs","test":"node --test tests/*.test.mjs"},"dependencies":{"@huggingface/transformers":"3.8.1"}}
